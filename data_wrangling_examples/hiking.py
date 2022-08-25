@@ -4,9 +4,17 @@
 
 import json
 import pandas as pd
+from pprint import pprint
 
 pd.set_option("display.width",200)
 pd.set_option("display.max.columns",20)
+
+# Since it's in JSON format, let's parse and look at it and see if it's
+# rectangular-ish.
+with open("directory-of-hiking-trails-1.json") as f:
+    tryit = json.load(f)
+pprint(tryit)
+input("Press enter")
 
 # Since it's in JSON format, I tried Pandas read_json() function, which seemed
 # to work okay. ("ht" stands for "hiking trails".)
@@ -40,4 +48,4 @@ diff_col[diff_col == "Easy "] = "Easy"
 diff_col[diff_col == ""] = None
 ht.Difficulty = diff_col
 
-print(ht)
+print(ht.head())
