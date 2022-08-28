@@ -6,42 +6,61 @@ import pandas as pd
 pd.set_option("display.max.columns",80)
 pd.set_option("display.width",240)
 
-# Load raw TSV file and rename columns.
-scoring = pd.read_csv("scoring.csv", sep="\t", comment="#")
-scoring.columns = ['Rk','Name','Team','GP','GS','Min','FG','FGpct','FG3',
-    'FG3pct','FT','FTpct','Pts']
 
-# Split first initial and last name into their own columns.
-name_parts = scoring.Name.str.split(" ", expand=True)
-scoring['Init'] = name_parts[0]
-scoring['Name'] = name_parts[1]
+def prep_file(name, combined_cols=[], recode_cols=[]):
+    """
+    Return a DataFrame with prepped contents from the CSV file passed as an
+    argument. The second column of the CSV is assumed to be a "name" field with
+    first initial and last name separated by a space. These will be put in two
+    different columns and set as the DataFrame's index.
 
-# Make school names shorter.
-team_map = pd.Series({}, dtype=object)
-for team in scoring.Team.unique():
-    team_map[team.strip()] = team.strip()
-team_map['UC Santa Cruz'] = 'UCSC'
-team_map['Chris. Newport'] = 'CNU'
-team_map['Mary Washington'] = 'UMW'
-team_map['Mount Mary'] = 'MM'
-scoring.Team = scoring.Team.str.strip().map(team_map)
+    Any columns whose name are in the second argument list are assumed to have
+    hyphens in their values, and will be turned into two integer columns with
+    "m" and "a" as suffixed (for "made" and "attempted.")
 
-# Split the annoying combined string columns into separate integer columns.
-fg_parts = scoring.FG.str.split("-", expand=True)
-scoring['FGM'] = fg_parts[0].astype(int)
-scoring['FGA'] = fg_parts[1].astype(int)
-fg3_parts = scoring.FG3.str.split("-", expand=True)
-scoring['FG3M'] = fg3_parts[0].astype(int)
-scoring['FG3A'] = fg3_parts[1].astype(int)
-ft_parts = scoring.FT.str.split("-", expand=True)
-scoring['FTM'] = ft_parts[0].astype(int)
-scoring['FTA'] = ft_parts[1].astype(int)
+    Any columns whose name are in the third argument are assumed to have
+    occasional "-" signs instead of zeroes. These will be replaced with zeroes,
+    and the column set to an integer type.
+    """
 
-# Some players have "-" games started instead of zero. Recode to integer.
-scoring['GS'] = scoring.GS.str.replace("-","0").astype(int)
+    # Load raw TSV file and rename columns.
+    df = pd.read_csv(name + ".csv", sep="\t", comment="#")
+    df.columns = ['Rk','Name','Team'] + [
+        c.strip() for c in list(df.columns[3:]) ]
 
-scoring = scoring[['Name','Init','Team','GP','GS','Min',
-    'FGM','FGA','FG3M','FG3A','FTM','FTA','Pts']].set_index(['Name','Init'])
+    # Split first initial and last name into their own columns.
+    name_parts = df.Name.str.split(" ", expand=True)
+    df['Init'] = name_parts[0]
+    df['Name'] = name_parts[1]
+
+    # Make school names shorter.
+    team_map = pd.Series({}, dtype=object)
+    for team in df.Team.unique():
+        team_map[team.strip()] = team.strip()
+    team_map['UC Santa Cruz'] = 'UCSC'
+    team_map['Chris. Newport'] = 'CNU'
+    team_map['Mary Washington'] = 'UMW'
+    team_map['Mount Mary'] = 'MM'
+    df.Team = df.Team.str.strip().map(team_map)
+
+    # Get rid of "pct" columns (we can always recreate those ourselves).
+    df = df[df.columns[~df.columns.str.contains('pct')]]
+
+    for col in combined_cols:
+        parts = df[col].str.split("-", expand=True)
+        df[col+'m'] = parts[0].astype(int)
+        df[col+'a'] = parts[1].astype(int)
+        del df[col]
+
+    for col in recode_cols:
+        df[col] = df[col].str.replace("-","0").astype(int)
+
+    return df.set_index(['Name','Init'])
+
+scoring = prep_file("scoring", ['fg','3pt','ft'], ['gs'])
+
+#scoring = scoring[['Name','Init','Team','GP','GS','Min',
+#    'FGM','FGA','FG3M','FG3A','FTM','FTA','Pts']].set_index(['Name','Init'])
 #ballcontrol = pd.read_csv("ballcontrol.csv", index_col=["Name","Init"],
 #    comment="#")
 #bb = pd.merge(scoring, ballcontrol.drop(["Team","gs","gp","mpg"],
