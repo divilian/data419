@@ -9,12 +9,15 @@ from pprint import pprint
 pd.set_option("display.width",200)
 pd.set_option("display.max.columns",20)
 
+
+# (Useful for setting a breakpoint to step through code line by line.)
+import ipdb; ipdb.set_trace()
+
 # Since it's in JSON format, let's parse and look at it and see if it's
 # rectangular-ish.
 with open("directory-of-hiking-trails-1.json") as f:
     tryit = json.load(f)
 pprint(tryit)
-input("Press enter")
 
 # Since it's in JSON format, I tried Pandas read_json() function, which seemed
 # to work okay. ("ht" stands for "hiking trails".)
