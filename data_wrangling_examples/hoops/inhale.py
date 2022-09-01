@@ -55,13 +55,11 @@ def prep_file(name, combined_cols=[], recode_cols=[]):
     for col in recode_cols:
         df[col] = df[col].str.replace("-","0").astype(int)
 
-    return df.set_index(['Name','Init'])
+    return df.set_index(['Team','Name','Init'])
 
-scoring = prep_file("scoring", ['fg','3pt','ft'], ['gs'])
+scoring = prep_file("scoring", ['fg','3pt','ft'], ['gs']).drop(['Rk'],
+    axis="columns")
+ballcontrol = prep_file("ballcontrol", [], ['gs']).drop(['Rk'],axis="columns")
+bb = pd.merge(scoring, ballcontrol.drop(["gs","gp","min"],
+    axis="columns"), left_index=True, right_index=True).sort_index()
 
-#scoring = scoring[['Name','Init','Team','GP','GS','Min',
-#    'FGM','FGA','FG3M','FG3A','FTM','FTA','Pts']].set_index(['Name','Init'])
-#ballcontrol = pd.read_csv("ballcontrol.csv", index_col=["Name","Init"],
-#    comment="#")
-#bb = pd.merge(scoring, ballcontrol.drop(["Team","gs","gp","mpg"],
-#    axis="columns"), left_index=True, right_index=True)
