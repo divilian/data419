@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 N = 50                 # Number of data points
-noise_level = 5        # std of white noise
+noise_level = 50        # std of white noise
 
 true_intercept = 13    # "Ground truth" for this synthetic model
 true_slope = -1.4
