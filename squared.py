@@ -1,6 +1,9 @@
 
-# Our first foray into scikit-learn modeling (linear regression).
-# (See also squared.py.)
+# A twist on our first foray into scikit-learn modeling (linear regression):
+# giving the algorithm non-linear features (in this case, the square of our one
+# and only input feature, in addition to the one and only input feature itself)
+# so that it can essentially model non-linear functions.
+# (See also first.py.)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,16 +11,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 N = 50                 # Number of data points
-noise_level = 50        # std of white noise
+noise_level = 500      # std of white noise
 
 true_intercept = 13    # "Ground truth" for this synthetic model
 true_slope = -1.4
+true_quad = 2
 
 
 np.random.seed(123)
 Xwhole = np.random.uniform(0,100,size=(N,1))
-ywhole = (Xwhole * true_slope + true_intercept +
+ywhole = (Xwhole**2 * true_quad + Xwhole * true_slope + true_intercept +
     np.random.normal(0,noise_level,size=(N,1)))
+Xwhole = np.c_[Xwhole**2, Xwhole]
 
 Xtrain, Xtest, ytrain, ytest = train_test_split(Xwhole, ywhole, shuffle=True,
     test_size=.2)
@@ -25,18 +30,19 @@ Xtrain, Xtest, ytrain, ytest = train_test_split(Xwhole, ywhole, shuffle=True,
 lr = LinearRegression()
 lr.fit(Xtrain,ytrain)
 print(f"The intercept is {lr.intercept_}")
-print(f"The slope is {lr.coef_[0]}")
+print(f"The slopes are {lr.coef_[0]}")
 
 # You can now call .predict() on lr, although since this is a linear model it's
 # nothing more than using the intercept and slope (coefficient) above.
 
 
 plt.clf()
-plt.axline(xy1=(0,lr.intercept_[0]), slope=lr.coef_[0], color="red",
-    linestyle="dashed",linewidth=2,label="linear model")
-plt.axline(xy1=(0,true_intercept), slope=true_slope, color="green",
-    linestyle="solid",label="ground truth")
-plt.scatter(Xtrain,ytrain,color="blue",marker="o")
+xs = np.arange(0,100,.1)
+plt.plot(xs, xs**2 * true_quad + xs * true_slope + true_intercept, 
+    color="green", label="ground truth")
+plt.plot(xs, xs**2 * lr.coef_[0][0] + xs * lr.coef_[0][1] + lr.intercept_[0], 
+    color="red", label="\"linear\" model")
+plt.scatter(Xtrain[:,1],ytrain,color="blue",marker="o")
 plt.legend()
 plt.savefig("plot.png")
 
