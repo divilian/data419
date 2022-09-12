@@ -70,7 +70,7 @@ housings = np.random.choice(['Off campus','On campus'],p=[.3,.7],
 features = np.c_[majors, housings]
 ohe = OneHotEncoder(categories=[np.array(['CPSC','MATH','PSYC','ENGL']),
     np.array(['Off campus','On campus'])])
-ohemajors = ohe.fit_transform(features)
+ohemajors_housings = ohe.fit_transform(features)
 ohe_fake_preds = np.array([[.1,.1,.65,.15,.9,.1],[.5,.3,.1,.1,.2,.8]])
 ohe_fake_preds_inverted = ohe.inverse_transform(ohe_fake_preds)
 
@@ -96,3 +96,21 @@ with_double_majors = np.array([
     ['ENGL']], dtype=object)
 mlb = MultiLabelBinarizer()
 mlbwith_double_majors = mlb.fit_transform(with_double_majors)
+
+
+# Stitching together multiple numeric columns to make a DataFrame. Yes, it's a
+# pain.
+#
+# First, create a NumPy array with all the columns. (This depends on all the
+# "arguments" being the same height (number of rows) and the same type, which
+# should be the case if you've done everything right.)
+# Remember the [], not (), with np.c_ !
+alldata = np.c_[sidata_with_missings, normalizedwild,
+    ohemajors_housings.toarray()]
+
+# Now, convert it to a DataFrame. This much is easy.
+alldf = pd.DataFrame(alldata)
+
+# Finally, give the DataFrame the correct column names. Ugh what a pain.
+alldf.columns = np.concatenate((['imputed'],['normalized'],
+    ohe.get_feature_names_out()))
