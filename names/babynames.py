@@ -59,3 +59,12 @@ def encode(name):
     return np.r_[ohe_features.ravel(), num_letters]
 
 
+# Let's play with this.
+name = input("\nEnter a name (or 'done'): ")
+while name != "done":
+    features = encode(name).reshape(1,-1)
+    predicted = lr.predict_proba(features)[0]
+    predicted_sex = "Boy" if predicted[0] > predicted[1] else "Girl"
+    confidence = predicted.max() * 100
+    print(f"Prediction: {predicted_sex} ({confidence:.1f}% confident)")
+    name = input("\nEnter a name (or 'done'): ")
