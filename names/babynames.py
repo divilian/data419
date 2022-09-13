@@ -19,24 +19,32 @@ first_letter_type = first_letter_type.to_numpy().reshape(-1,1)
 last_letter = dataset.Name.str[-1]
 last_letter = last_letter.to_numpy().reshape(-1,1)
 
-# We'll one-hot encode our categorical features all at once. This will give
-# each feature a unique "name" (via .get_feature_names_out()) and also allow us
-# to encode live data as it comes down the pike.
+# (We'll one-hot encode our categorical features all at once. This will give
+# each feature a unique "name" (via .get_feature_names_out()) and also allow
+# us to encode live data as it comes down the pike.)
 ohe_features = ohe.fit_transform(np.c_[first_letter_type, last_letter])
 ohe_feature_names = ohe.get_feature_names_out()
 
 # Feature #3: how long is the name?
 num_letters = dataset.Name.str.len().to_numpy().reshape(-1,1).astype(float)
 
+
+# Great! Slap together our encoded features, and create X and y.
 X = np.c_[ohe_features, num_letters]
 y = dataset.Sex.to_numpy()
 
+
+# Split into separate test/training sets.
 Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, train_size=.8,
     shuffle=True)
 
+
+# Fit a logistic regression classifier to this data.
 lr = LogisticRegression(max_iter=10000)
-lr.fit(Xtrain,ytrain)
-print(f"Score: {lr.score(Xtest,ytest)}")
+lr.fit(Xtrain,ytrain)   # can now examine lr.coef_ and lr.intercept_
+
+print(f"(Train score: {lr.score(Xtrain,ytrain):.3f})")
+print(f" Test score:  {lr.score(Xtest,ytest):.3f}")
 
 
 # Optional: as a sanity check, let's make a DataFrame that has the name and all
