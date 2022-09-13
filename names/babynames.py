@@ -45,3 +45,17 @@ feature_names = np.concatenate([ohe_feature_names, ['num_letters']])
 encoded = pd.DataFrame(X)
 encoded.columns = feature_names
 encoded['Name'] = dataset.Name
+
+
+
+def encode(name):
+    """
+    Given a name, return a vector of features for it.
+    """
+    first_letter_type = np.array([name[0] in list("AEIOU")]).reshape(-1,1)
+    last_letter = np.array([name[-1]], dtype="object").reshape(-1,1)
+    ohe_features = ohe.transform(np.c_[first_letter_type, last_letter])
+    num_letters = len(name)
+    return np.r_[ohe_features.ravel(), num_letters]
+
+
