@@ -19,11 +19,14 @@ first_letter_type = first_letter_type.to_numpy().reshape(-1,1)
 # Feature #2: what is the last letter?
 last_letter = dataset.Name.str[-1]
 last_letter = last_letter.to_numpy().reshape(-1,1)
+second_to_last_letter = dataset.Name.str[-2:]
+second_to_last_letter = second_to_last_letter.to_numpy().reshape(-1,1)
 
 # (We'll one-hot encode our categorical features all at once. This will give
 # each feature a unique "name" (via .get_feature_names_out()) and also allow
 # us to encode live data as it comes down the pike.)
-ohe_features = ohe.fit_transform(np.c_[first_letter_type, last_letter])
+ohe_features = ohe.fit_transform(np.c_[first_letter_type, last_letter,
+    second_to_last_letter])
 ohe_feature_names = ohe.get_feature_names_out()
 
 # Feature #3: how long is the name?
