@@ -7,12 +7,13 @@ from sklearn.preprocessing import OneHotEncoder
 from nltk.corpus import names
 
 dataset = pd.read_csv("babynames.csv")
+dataset.Name = dataset.Name.str.lower()
 
 
 ohe = OneHotEncoder(sparse=False)    # We want "normal" NumPy matrices
 
 # Feature #1: does the name start with a vowel?
-first_letter_type = dataset.Name.str[0].isin(['A','E','I','O','U'])
+first_letter_type = dataset.Name.str[0].isin(['a','e','i','o','u'])
 first_letter_type = first_letter_type.to_numpy().reshape(-1,1)
 
 # Feature #2: what is the last letter?
