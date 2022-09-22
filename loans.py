@@ -11,13 +11,13 @@ np.random.seed(123)
 
 N = 150
 
-target = np.random.choice(['payer','defaulter'],p=[.8,.2],size=(N,1))
+target = np.random.choice(['payer','defaulter'],p=[.8,.2],size=N)
 salary = np.where(
-    target == 'payer', np.random.normal(100,30,size=(N,1)).clip(0),
-    np.random.normal(50,20,size=(N,1)).clip(0)).round(0)
+    target == 'payer', np.random.normal(100,30,size=N).clip(0),
+    np.random.normal(50,20,size=N).clip(0)).round(0)
 yrs_emp = np.where(
-    target == 'payer', np.random.uniform(0,40,size=(N,1)),
-    np.random.uniform(0,20,size=(N,1)).clip(0)).round(0)
+    target == 'payer', np.random.uniform(0,40,size=N),
+    np.random.uniform(0,20,size=N).clip(0)).round(0)
 
 X = np.c_[salary,yrs_emp]
 y = target
@@ -43,6 +43,6 @@ b = -lr.intercept_/lr.coef_[0][1]
 plt.clf()
 plt.xlabel("Years employed")
 plt.ylabel("Salary (in thousands)")
-plt.scatter(yrs_emp,salary,c=np.where(target.ravel()=="payer","green","red"))
+plt.scatter(yrs_emp,salary,c=np.where(target=="payer","green","red"))
 plt.axline((0,b[0]), slope=m, color="blue")
 plt.show()
