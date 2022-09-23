@@ -2,9 +2,13 @@
 # Screen-scraped from https://www.c2csports.com/sports/wbkb/2021-22/players
 
 import pandas as pd
+import numpy as np
 
 pd.set_option("display.max.columns",80)
 pd.set_option("display.width",240)
+pd.set_option("display.float_format","{:.3f}".format)
+np.set_printoptions(suppress=True)
+
 
 
 def prep_file(name, combined_cols=[], recode_cols=[]):
