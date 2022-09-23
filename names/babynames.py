@@ -1,7 +1,7 @@
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import OneHotEncoder
 from nltk.corpus import names
@@ -38,45 +38,41 @@ X = np.c_[ohe_features, num_letters]
 y = dataset.Sex.to_numpy()
 
 
-# Split into separate test/training sets.
-Xtrain, Xtest, ytrain, ytest = train_test_split(X, y, train_size=.8,
-    shuffle=True)
 
 
 # Fit a logistic regression classifier to this data.
 lr = LogisticRegression(max_iter=10000)
-lr.fit(Xtrain,ytrain)   # can now examine lr.coef_ and lr.intercept_
+scores = cross_val_score(lr, X, y, cv=50)
 
-print(f"(Train score: {lr.score(Xtrain,ytrain):.3f})")
-print(f" Test score:  {lr.score(Xtest,ytest):.3f}")
-
-
-# Optional: as a sanity check, let's make a DataFrame that has the name and all
-# the encoded features.
-feature_names = np.concatenate([ohe_feature_names, ['num_letters']])
-encoded = pd.DataFrame(X)
-encoded.columns = feature_names
-encoded['Name'] = dataset.Name
+print(f"Your average score was: {scores.mean():.2f}")
 
 
-
-def encode(name):
-    """
-    Given a name, return a vector of features for it.
-    """
-    first_letter_type = np.array([name[0] in list("AEIOU")]).reshape(-1,1)
-    last_letter = np.array([name[-1]], dtype="object").reshape(-1,1)
-    ohe_features = ohe.transform(np.c_[first_letter_type, last_letter])
-    num_letters = len(name)
-    return np.r_[ohe_features.ravel(), num_letters]
+## Optional: as a sanity check, let's make a DataFrame that has the name and all
+## the encoded features.
+#feature_names = np.concatenate([ohe_feature_names, ['num_letters']])
+#encoded = pd.DataFrame(X)
+#encoded.columns = feature_names
+#encoded['Name'] = dataset.Name
 
 
-# Let's play with this.
-name = input("\nEnter a name (or 'done'): ")
-while name != "done":
-    features = encode(name).reshape(1,-1)
-    predicted = lr.predict_proba(features)[0]
-    predicted_sex = "Boy" if predicted[0] > predicted[1] else "Girl"
-    confidence = predicted.max() * 100
-    print(f"Prediction: {predicted_sex} ({confidence:.1f}% confident)")
-    name = input("\nEnter a name (or 'done'): ")
+
+#def encode(name):
+#    """
+#    Given a name, return a vector of features for it.
+#    """
+#    first_letter_type = np.array([name[0] in list("AEIOU")]).reshape(-1,1)
+#    last_letter = np.array([name[-1]], dtype="object").reshape(-1,1)
+#    ohe_features = ohe.transform(np.c_[first_letter_type, last_letter])
+#    num_letters = len(name)
+#    return np.r_[ohe_features.ravel(), num_letters]
+#
+#
+## Let's play with this.
+#name = input("\nEnter a name (or 'done'): ")
+#while name != "done":
+#    features = encode(name).reshape(1,-1)
+#    predicted = lr.predict_proba(features)[0]
+#    predicted_sex = "Boy" if predicted[0] > predicted[1] else "Girl"
+#    confidence = predicted.max() * 100
+#    print(f"Prediction: {predicted_sex} ({confidence:.1f}% confident)")
+#    name = input("\nEnter a name (or 'done'): ")
