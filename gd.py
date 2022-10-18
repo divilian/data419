@@ -10,6 +10,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 np.random.seed(123)
 
@@ -24,6 +25,8 @@ true_x1_slope = 2.43
 print(f"True weights:    {np.array([true_x0_slope, true_x1_slope])}")
 
 X = 2*np.random.rand(N,2)
+ss = StandardScaler()
+X = ss.fit_transform(X)
 y = true_x0_slope * X[:,0:1] + true_x1_slope * X[:,1:2] + \
     np.random.normal(0,1,size=(N,1))
 
