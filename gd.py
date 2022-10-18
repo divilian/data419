@@ -27,7 +27,6 @@ X = 2*np.random.rand(N,1)
 y = true_int + true_x0_slope * X + np.random.normal(0,1,size=(N,1))
 
 
-
 # 1. Use Normal Equation.
 X = np.c_[np.ones((N,1)),X]    # Add column of ones
 
@@ -51,7 +50,7 @@ wacky_initial_intercept_guess = -94
 wacky_initial_x0_slope_guess = 18.2
 weights = np.array([[wacky_initial_intercept_guess],
     [wacky_initial_x0_slope_guess]])
-eta = .1       # Our learning rate.
+eta = .15       # Our learning rate.
 n_iter = 100   # We'll make this many adjustments to the weights.
 
 # (Keep track of the weights as they're adjusted over time, for plotting.)
@@ -80,11 +79,14 @@ print(f"Gradient Desc:   {np.array([intercepts[-1],slopes[-1]])}")
 fig, axs = plt.subplots(2,1)
 axs[0].plot(intercepts)
 axs[0].axhline(y=true_int, color="red")
-axs[0].set_ylim(intercepts.min() - 5, intercepts.max() + 5)
+axs[0].set_ylim(min(true_int, intercepts.min()) - 5,
+    max(true_int,intercepts.max()) + 5)
 axs[0].set_ylabel("Estimated intercept")
 axs[1].plot(slopes)
 axs[1].axhline(y=true_x0_slope, color="red")
 axs[1].set_ylim(slopes.min() - 5, slopes.max() + 5)
+axs[1].set_ylim(min(true_x0_slope, slopes.min()) - 5,
+    max(true_x0_slope,slopes.max()) + 5)
 axs[1].set_xlabel("Number of iterations")
 axs[1].set_ylabel("Estimated x0 slope")
 fig.suptitle("Gradient Descent -- weight convergence")
