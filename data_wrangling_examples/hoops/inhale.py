@@ -67,3 +67,10 @@ ballcontrol = prep_file("ballcontrol", [], ['gs']).drop(['Rk'],axis="columns")
 bb = pd.merge(scoring, ballcontrol.drop(["gs","gp","min"],
     axis="columns"), left_index=True, right_index=True).sort_index()
 
+bb['height'] = np.empty(len(bb),dtype=float)
+
+import os
+for f in [ f for f in os.listdir("rosters") if f.endswith(".csv") ]:
+    roster = pd.read_csv("rosters/"+f, header=None, sep="\t")
+    print(roster)
+    input("hi")

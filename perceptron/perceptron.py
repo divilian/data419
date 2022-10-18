@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 from genData import gen_data, label_of_pts_wrt_weights
 
 # 12, 123, 123456
-np.random.seed(12)
+np.random.seed(1234)
 
-N = 250 # number of training points
+N = 50 # number of training points
 MAX_ITER = 1000  # (Necessary if data is not linearly separable.)
 
 
