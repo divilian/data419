@@ -66,7 +66,7 @@ for i in range(1,n_iter):
     # Nudge our weights in the right direction, using eta as a learning rate.
     weights -= eta * gradient
 
-    # (Record the new intercept and slope, for later plotting.)
+    # (Record the new weights, for later plotting.)
     weights_hist[i,:] = weights.ravel()
 
 print(f"Gradient Desc:   {weights_hist[-1,:]}")
