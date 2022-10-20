@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-num_pcs = 8
+num_pcs = 2
 
 dropped_cols = ['pts','fgm','3ptm','ftm']
 X = bb.drop(dropped_cols,axis=1).to_numpy().reshape(len(bb),-1)
@@ -18,16 +18,24 @@ y = bb['pts'].to_numpy()
 pca = PCA(n_components=num_pcs)
 pcs = pca.fit_transform(X)
 
+plt = plt.figure()
+ax = plt.add_subplot(111)
+
 # If we're using exactly 2 principal components, make an annotated plot.
 if num_pcs == 2:
-    names = [ ind[1] for ind in bb.index ]
     teams = [ ind[0] for ind in bb.index ]
+    names = [ ind[1] for ind in bb.index ]
+    inits = [ ind[2] for ind in bb.index ]
     colors = [ "blue" if t=="UMW" else "orange" for t in teams ]
 
-    plt.scatter(x=pcs[:,0],y=pcs[:,1],c=colors)
+    ax.scatter(x=pcs[:,0],y=pcs[:,1],c=colors)
     for i in range(len(y)):
-        plt.annotate(names[i], (pcs[i,0], pcs[i,1]))
-    plt.show()
+        ax.annotate(inits[i] + "." + names[i], (pcs[i,0], pcs[i,1]),
+            xytext=(5,1),textcoords='offset points')
+
+# Show square plot, not rectangle.
+ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
+plt.show()
 
 lr = LinearRegression()
 orig_scores = cross_val_score(lr,X,y,cv=10)
