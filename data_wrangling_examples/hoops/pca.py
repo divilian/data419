@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-num_pcs = 12
-doGridSearch = False
+num_pcs = 2
 
 dropped_cols = ['pts','fgm','3ptm','ftm']
 X = bb.drop(dropped_cols,axis=1).to_numpy().reshape(len(bb),-1)
@@ -42,13 +41,11 @@ if num_pcs == 2:
 
 lr = LinearRegression()
 orig_scores = cross_val_score(lr,X,y,cv=10)
-proj_scores = cross_val_score(lr,pcs,y,cv=10)
 print(f"mean score (orig):  {orig_scores.mean():.4f}")
-print(f"mean score (proj):  {proj_scores.mean():.4f}")
 
 p = make_pipeline(pca, lr)
 p_scores = cross_val_score(p,X,y,cv=10)
-print(f"mean score (pipe):  {p_scores.mean():.4f}")
+print(f"mean score (pca{num_pcs}):  {p_scores.mean():.4f}")
 
 
 # If we're using all PCs, plot their fraction of explained variance.
@@ -61,7 +58,6 @@ if num_pcs == X.shape[1]:
 
 
 
-if doGridSearch:
-    gs = GridSearchCV(p, {'pca__n_components':np.arange(1,X.shape[1])}, cv=10)
-    gs.fit(X,y)
-    print(f"Best score ({gs.best_params_['pca__n_components']} PCs): {gs.best_score_:.4f}")
+gs = GridSearchCV(p, {'pca__n_components':np.arange(1,X.shape[1])}, cv=10)
+gs.fit(X,y)
+print(f"Best score ({gs.best_params_['pca__n_components']} PCs): {gs.best_score_:.4f}")

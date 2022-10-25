@@ -10,7 +10,6 @@ from sklearn.model_selection import train_test_split
 
 np.random.seed(1234)
 
-plotPCs=False
 N=100
 
 # Generate a couple of random features, loosely correlated but with noise.
@@ -49,12 +48,11 @@ plt.ylim(-100,100)
 # Plot points.
 plt.scatter(x0,x1)
 
-if plotPCs:
-    plt.axline((0,0), xy2=(domeig[0],domeig[1]), color="red",
-        label="dominant eigenvector")
-    plt.axline((0,0), xy2=(woosyeig[0],woosyeig[1]), color="green",
-        label="woosy eigenvector")
-    plt.legend()
+plt.axline((0,0), xy2=(domeig[0],domeig[1]), color="red",
+    label="dominant eigenvector")
+plt.axline((0,0), xy2=(woosyeig[0],woosyeig[1]), color="green",
+    label="woosy eigenvector")
+plt.legend()
 
 ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
 plt.show()
