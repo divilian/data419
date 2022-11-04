@@ -20,7 +20,7 @@ N = 30
 data_with_missings = np.random.normal(100,30,size=N).reshape(N,1)
 data_with_missings[np.random.choice([True,False],p=[.2,.8],size=N)] = np.nan
 si = SimpleImputer(missing_values=np.nan, strategy='mean')
-sidata_with_missings = si.fit_transform(data_with_missings)
+sidata = si.fit_transform(data_with_missings)
 
 
 # Normalization -- put everything on a 0-1 (or similar) scale.
@@ -105,8 +105,7 @@ mlbwith_double_majors = mlb.fit_transform(with_double_majors)
 # "arguments" being the same height (number of rows) and the same type, which
 # should be the case if you've done everything right.)
 # Remember the [], not (), with np.c_ !
-alldata = np.c_[sidata_with_missings, normalizedwild,
-    ohemajors_housings.toarray()]
+alldata = np.c_[sidata, normalizedwild, ohemajors_housings.toarray()]
 
 # Now, convert it to a DataFrame. This much is easy.
 alldf = pd.DataFrame(alldata)
