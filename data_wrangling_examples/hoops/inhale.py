@@ -11,7 +11,7 @@ np.set_printoptions(suppress=True)
 
 
 
-def prep_file(name, combined_cols=[], recode_cols=[]):
+def prep_file(name, combined_cols=[], recode_cols=[], light=False):
     """
     Return a DataFrame with prepped contents from the CSV file passed as an
     argument. The second column of the CSV is assumed to be a "name" field with
@@ -28,9 +28,13 @@ def prep_file(name, combined_cols=[], recode_cols=[]):
     """
 
     # Load raw TSV file and rename columns.
-    df = pd.read_csv(name + ".csv", sep="\t", comment="#")
-    df.columns = ['Rk','Name','Team'] + [
-        c.strip() for c in list(df.columns[3:]) ]
+    if light:
+        df = pd.read_csv(name + ".csv")
+    else:
+        df = pd.read_csv(name + ".csv", sep="\t", comment="#")
+        df.columns = ['Rk','Name','Team'] + [
+            c.strip() for c in list(df.columns[3:]) ]
+    
 
     # Split first initial and last name into their own columns.
     name_parts = df.Name.str.split(" ", expand=True)
@@ -64,13 +68,15 @@ def prep_file(name, combined_cols=[], recode_cols=[]):
 scoring = prep_file("scoring", ['fg','3pt','ft'], ['gs']).drop(['Rk'],
     axis="columns")
 ballcontrol = prep_file("ballcontrol", [], ['gs']).drop(['Rk'],axis="columns")
+
+# Already prepped.
+meta = prep_file("meta",[],[],True).drop(['Rk'],axis="columns")
+
 bb = pd.merge(scoring, ballcontrol.drop(["gs","gp","min"],
     axis="columns"), left_index=True, right_index=True).sort_index()
+bb = pd.merge(bb, meta, left_index=True, right_index=True)
 
-bb['height'] = np.empty(len(bb),dtype=float)
+# Meh, make all the "no comments" into forwards, I guess.
+bb.pos = np.where(bb.pos == "-", "F", bb.pos)
 
-import os
-for f in [ f for f in os.listdir("rosters") if f.endswith(".csv") ]:
-    roster = pd.read_csv("rosters/"+f, header=None, sep="\t")
-    print(roster)
-    input("hi")
+
