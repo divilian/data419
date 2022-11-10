@@ -24,3 +24,9 @@ graph = pydotplus.graph_from_dot_data(dot)
 graph.write_png("bbdt.png")
 
 print(f"Accuracy on train: {dtc.score(X,y)*100:3f}%")
+
+imps = pd.DataFrame({'feature':bb.columns.drop('pos'),
+    'importance':dtc.feature_importances_}).set_index('feature')
+
+print("Feature importances:")
+print(imps.sort_values('importance', ascending=False))
