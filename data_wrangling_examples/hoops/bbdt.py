@@ -15,29 +15,38 @@ from sklearn.preprocessing import OneHotEncoder
 
 print("\nPredicting player position from all other stats...")
 
-dropped_cols = ['pos']                     # (Sure, make it overly easy.)
+dropped_cols = ['pos']
 
 # Note we're using "bb" and "y" here instead of our more typical "X" and "y";
 # this is because "bb" is a DataFrame with named columns (generated in the
 # "inhale.py" script) and so it works easier with a ColumnTransformer.
 y = bb['pos'].to_numpy()
 
-dtc = DecisionTreeClassifier(max_depth=3, criterion='entropy')
+
+# Let's try various values for depth (4-11) and choose the best.
+
+dtc = DecisionTreeClassifier(criterion='entropy', random_state=123)
 pipe = make_pipeline(make_column_transformer(
     ('passthrough',bb.drop(dropped_cols,axis=1).columns)),
     dtc)
-pipe.fit(bb.drop(dropped_cols,axis=1),y)
-dot = export_graphviz(dtc,feature_names=pipe[:-1].get_feature_names_out(),
+grid = GridSearchCV(pipe, {'decisiontreeclassifier__max_depth':range(4,10)},
+    cv=5)
+grid.fit(bb.drop(dropped_cols,axis=1),y)
+
+best_max_depth = grid.best_params_['decisiontreeclassifier__max_depth']
+print(f"Best max depth: {best_max_depth} (score: {grid.best_score_:3f})")
+
+dot = export_graphviz(grid.best_estimator_[-1],
+    feature_names=grid.best_estimator_[:-1].get_feature_names_out(),
     class_names=['Center','Forward','Guard'],
     label='root',impurity=True,filled=True,rounded=True)
 graph = pydotplus.graph_from_dot_data(dot)
 graph.write_png("bbdt.png")
 
-print(f"Training score: {pipe.score(bb,y):3f}")
-print(f"Avg CV test score: {cross_val_score(pipe,bb,y,cv=5).mean()}")
-
-imps = pd.DataFrame({'feature':pipe[:-1].get_feature_names_out(),
-    'importance':dtc.feature_importances_}).set_index('feature')
+imps = pd.DataFrame(
+    {'feature':grid.best_estimator_[:-1].get_feature_names_out(),
+     'importance':grid.best_estimator_[-1].feature_importances_}).set_index(
+                                                                    'feature')
 
 print("Feature importances:")
 print(imps.sort_values('importance', ascending=False))
