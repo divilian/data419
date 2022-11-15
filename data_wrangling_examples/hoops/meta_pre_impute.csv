@@ -3,10 +3,10 @@ Rk,Name,Team,pos
 3,A Simmons,Chris. Newport,F
 15,N Terwilliger,Chris. Newport,C
 20,G San diego,Chris. Newport,G
-22,P McInnis,Chris. Newport,F
+22,P McInnis,Chris. Newport,-
 24,H Kaloi,Chris. Newport,F
 29,J Winkey,Chris. Newport,G
-32,J Foster,Chris. Newport,F
+32,J Foster,Chris. Newport,-
 36,K Rader,Chris. Newport,F
 38,A Giles,Chris. Newport,F
 42,H Orloff,Chris. Newport,C
@@ -30,12 +30,12 @@ Rk,Name,Team,pos
 40,M Baxter,Mary Washington,G
 43,S Sherman,Mary Washington,F
 11,T Campbell,Mount Mary,G
-26,B Duke,Mount Mary,F
-45,B Jashinsky,Mount Mary,F
-8,K O'Connor,Pratt,C
-14,K Grant,Pratt,F
-25,S Bischoff,Pratt,C
-26,N Graf,Pratt,F
+26,B Duke,Mount Mary,-
+45,B Jashinsky,Mount Mary,-
+8,K O'Connor,Pratt,-
+14,K Grant,Pratt,-
+25,S Bischoff,Pratt,-
+26,N Graf,Pratt,-
 1,K Otlowski,Salisbury,C
 7,L Fortescue,Salisbury,G
 18,K Webb,Salisbury,G
