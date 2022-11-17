@@ -17,7 +17,7 @@ from sklearn.preprocessing import OneHotEncoder
 print("\nPredicting points scored from all other (non-obvious) stats...")
 
 dropped_cols = ['pts','fgm','3ptm','ftm']   # Don't make it overly easy.
-#dropped_cols = ['pts']                     # (Sure, make it overly easy.)
+#dropped_cols = ['pts']                     # (Aw, sure, make it overly easy.)
 
 # Note we're using "bb" and "y" here instead of our more typical "X" and "y";
 # this is because "bb" is a DataFrame with named columns (generated in the
@@ -34,11 +34,11 @@ pipe = make_pipeline(make_column_transformer(
     ('passthrough',list(num_cols)),
     (OneHotEncoder(),['pos'])),
     dtr)
-grid = GridSearchCV(pipe, {'decisiontreeregressor__max_depth':range(3,4)},
+grid = GridSearchCV(pipe, {'decisiontreeregressor__max_depth':range(4,12)},
     cv=5)
 grid.fit(bb.drop(dropped_cols,axis=1),y)
 best_max_depth = grid.best_params_['decisiontreeregressor__max_depth']
-print(f"Best max depth: {best_max_depth} (score: {grid.best_score_:3f})")
+print(f"Best max depth: {best_max_depth}")
 
 dot = export_graphviz(grid.best_estimator_[-1],
     feature_names=grid.best_estimator_[:-1].get_feature_names_out(),
