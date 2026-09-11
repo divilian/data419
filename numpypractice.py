@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+'''
+DATA 419 -- Assignment #0.5 support file
+Stephen Davies, University of Mary Washington, fall 2026
+'''
+
 # NumPy practice worksheet (up to +20XP)
 # Instructions: fill in the "YOUR CODE GOES HERE" sections by carefully
 #   reading and following the instructions.
@@ -57,12 +63,16 @@ w = np.array([4., 5., 6.])
 
 
 # ---------------------------
-# Item 6: Cosine similarity
-# Compute the cosine similarity between the vectors v and w, and store the
-# answer in a variable called cos_vw.
+# Item 6: More indexing & slicing
+# Given the matrix B below, use indexing and slicing (not np.array()) to create
+# the following variables:
+#   first_four_rows: the first four rows of B
+#   last_three_cols: the last three columns of B
+#   upper_right: the first four rows and columns 3 through the end
+#   every_other_row: rows 1, 3, and 5 (i.e., every other row, starting with
+#       the first)
+B = np.arange(30).reshape(6, 5)
 # === YOUR CODE GOES HERE ===
-
-
 # ---------------------------
 # Item 7: Transpose
 # Set a variable called M_T to the transpose of the matrix below. Then set a
@@ -150,18 +160,15 @@ u2 = np.array([4., 5., 6.])
 
 
 # ---------------------------
-# Item 15: Batched matrix-mult
-# Print out and consider the arrays X and Y below. Ask yourself: what shapes
-# are X and Y? Should X @ Y be allowed? Should Y @ X? If so, what is shape of
-# each? Put your answers to these in variables called X_dot_Y_shape and
-# Y_dot_X_shape.
-X = np.stack([C, C + 1], axis=0)
-D = np.array([[7., 8., 9., 10.],
-              [10., 11., 12., 13.]])
-Y = np.stack([D, D], axis=0)
+# Item 15: Shapes
+# Examine the arrays below. Without re-creating any arrays, set the variables
+# v_shape, M_shape, and cube_shape equal to their shapes. Then set rows_M and
+# cols_M equal to the number of rows and columns in shape_M, respectively,
+# using shape_M.shape.
+shape_v = np.array([10., 20., 30., 40.])
+shape_M = np.arange(15).reshape(3, 5)
+cube = np.arange(24).reshape(2, 3, 4)
 # === YOUR CODE GOES HERE ===
-
-
 # ---------------------------
 # Item 16: Scalars (rank-0)
 # Compute the sum, and the product, of the two scalar arrays below, then use
@@ -202,42 +209,29 @@ b0 = np.array(2.0)
 
 
 # ---------------------------
-# Item 19: Sigmoid function
-# You still have your 1-d array called "values" from above.
-# Now, take a moment and ask yourself: "approximately what should I expect to
-# get if I ran the sigmoid function on each one of those values?"
-# Then, actually compute the sigmoid of all values in that array, and store it
-# in a variable called sigmoids. (In other words, the first element should be
-# the sigmoid function applied to the number -10, etc. I recommend writing a
-# function called sigmoid() that takes an array argument and returns an array
-# result, then call it to produce your answer with one line of code.)
-# Print it out for yourself. Were your guesses right?
-# === YOUR CODE GOES HERE ===
-
-
-# ---------------------------
-# Item 20: One neuron
+# Item 19: Random numbers
+# Use NumPy's random-number functions to create the following:
+#   random_ints: 10 random integers from 1 through 6, inclusive
+#   random_choices: 8 random choices from the array ["red", "green", "blue"]
+#   random_uniforms: 7 random real numbers uniformly distributed from -2 to 2
+#   random_normals: 9 random real numbers from a normal distribution with mean
+#       100 and standard deviation 15
 #
-# Define a function called "jezebel_neuron()" that will compute the probability
-# that Jezebel will be attracted to a particular romantic partner. It should
-# take a rank-1, 5-dimensional array as input, and return a scalar probability.
-# The output should be that of a single neuron (put another way, a single
-# logistic regression) with the weights equal to (in order): 5, -1.2, -2, 0,
-# 6.
-# Then execute this function on the three variables filbert, wendell, and biff,
-# defined below. Before doing so, ask yourself: what range would I expect the
-# answer to be in? And would I expect the answer to be higher for filbert,
-# wendell, or biff? Then print out your answers and see if you're right. Store
-# your answers in variables called filbert_prob, wendell_prob, and biff_prob.
-# Finally, stack the three boys in a single matrix (to make a rank-2 array of
-# shape 3x5) called "boys". Filbert should be on row 1, Wendell on row 2, and
-# Biff on row 3. Then run your jezebel_neuron() function on it all in one go,
-# and store the answers in a 3-element vector called boy_probs.
-
-filbert = np.array([1.0, 0.0, 0.0, 0.0, 1.0])
-wendell = np.array([0.0, 1.0, 1.0, 0.0, 0.0])
-biff = np.array([1.0, 0.0, 1.0, 0.0, 0.0])
-
+# Important: use np.random.randint(), np.random.choice(), np.random.uniform(),
+# and np.random.normal(), respectively. The checker will test the arrays'
+# shapes and whether their values satisfy the requested conditions.
+np.random.seed(123)
+# === YOUR CODE GOES HERE ===
+# ---------------------------
+# Item 20: Slicing challenge
+# Given the matrix E below, use indexing and slicing (not np.array()) to create
+# each requested result:
+#   middle: rows 2 through 4 and columns 2 through 4
+#   bottom_left: the last three rows and first two columns
+#   reverse_rows: all of E, but with the rows in reverse order
+#   checkerboard: every other row and every other column, starting with the
+#       first row and first column
+E = np.arange(1, 31).reshape(5, 6)
 # === YOUR CODE GOES HERE ===
 
 
@@ -302,12 +296,13 @@ check_item(4, ["v_l2", "v_l1", "v_normalized"], lambda: (
 check_item(5, ["dist_vw"], lambda: (
     np.isclose(dist_vw, np.linalg.norm(v - w), atol=1e-5)
 ))
-check_item(6, ["cos_vw"], lambda: (
-    np.isclose(
-        cos_vw,
-        np.dot(v, w) / (np.linalg.norm(v) * np.linalg.norm(w)),
-        atol=1e-6,
-    )
+check_item(6, [
+    "first_four_rows", "last_three_cols", "upper_right", "every_other_row"
+], lambda: (
+    np.array_equal(first_four_rows, B[:4])
+    and np.array_equal(last_three_cols, B[:, 2:])
+    and np.array_equal(upper_right, B[:4, 2:])
+    and np.array_equal(every_other_row, B[::2])
 ))
 check_item(7, ["M_T", "M_T_T"], lambda: (
     np.array_equal(M_T, M.T) and np.array_equal(M, M_T_T)
@@ -345,10 +340,14 @@ check_item(14, ["sum_C", "mean_C", "max_C"], lambda: (
     and np.isclose(max_C, C.max())
     and np.isclose(mean_C, C.mean())
 ))
-check_item(15, ["X_dot_Y_shape", "Y_dot_X_shape"], lambda: (
-    tuple(X_dot_Y_shape) == (2, 3, 4)
-    and isinstance(Y_dot_X_shape, str)
-    and Y_dot_X_shape == "u cant do dat"
+check_item(15, [
+    "v_shape", "M_shape", "cube_shape", "rows_M", "cols_M"
+], lambda: (
+    tuple(v_shape) == (4,)
+    and tuple(M_shape) == (3, 5)
+    and tuple(cube_shape) == (2, 3, 4)
+    and rows_M == 3
+    and cols_M == 5
 ))
 check_item(16, ["a_plus_b", "a_times_b"], lambda: (
     isinstance(a_plus_b, float)
@@ -376,26 +375,33 @@ check_item(18, ["logs"], lambda: (
         atol=1e-4,
     )
 ))
-check_item(19, ["sigmoids"], lambda: (
-    np.allclose(
-        sigmoids,
-        np.array([
-            0.0000453979, 0.2689414214, 0.5, 0.50025,
-            0.7310585786, 0.9380968326, 0.9999546021,
-        ]),
-        atol=1e-4,
+check_item(19, [
+    "random_ints", "random_choices", "random_uniforms", "random_normals"
+], lambda: (
+    np.array_equal(
+        random_ints,
+        np.array([6, 3, 5, 3, 2, 4, 3, 4, 2, 2])
+    )
+    and np.array_equal(
+        random_choices,
+        np.array(['red', 'green', 'blue', 'green', 'red', 'blue', 'red', 'green'])
+    )
+    and np.allclose(
+        random_uniforms,
+        np.array([-0.24571102128150235, -1.7612884135617266, -0.40782297867827433, 0.9519816229281428, -1.270033078186, -1.2981929754100299, 0.12620549536735348])
+    )
+    and np.allclose(
+        random_normals,
+        np.array([133.11141152777492, 107.84113703994169, 106.98467133693508, 110.87372838146901, 122.43739788260763, 111.19870887869848, 83.48522117482032, 78.84548194036388, 88.78523024864701])
     )
 ))
-check_item(20, ["boy_probs", "filbert_prob", "wendell_prob", "biff_prob"],
-           lambda: (
-    np.isclose(filbert_prob, 0.9999832986, atol=1e-4)
-    and np.isclose(wendell_prob, 0.0391657228, atol=1e-4)
-    and np.isclose(biff_prob, 0.9525741268, atol=1e-4)
-    and np.allclose(
-        boy_probs,
-        np.array([0.9999832986, 0.0391657228, 0.9525741268]),
-        atol=1e-4,
-    )
+check_item(20, [
+    "middle", "bottom_left", "reverse_rows", "checkerboard"
+], lambda: (
+    np.array_equal(middle, E[1:4, 1:4])
+    and np.array_equal(bottom_left, E[-3:, :2])
+    and np.array_equal(reverse_rows, E[::-1])
+    and np.array_equal(checkerboard, E[::2, ::2])
 ))
 
 print(f"You got +{score}XP! (out of a possible 20XP)")
