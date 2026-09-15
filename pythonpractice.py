@@ -24,6 +24,8 @@ if len(sys.argv) != 2:
     print_usage()
     sys.exit(1)
 
+if sys.argv[1].endswith("_pythonpractice.py"):
+    sys.argv[1] = sys.argv[1].replace("_pythonpractice.py","")
 try:
     exec(open("./" + sys.argv[1] + "_pythonpractice.py").read())
 except Exception as err:
