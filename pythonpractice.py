@@ -57,7 +57,6 @@ for var,val in the_vars.items():
             type(val) != type(globals()[var]) or
             val != globals()[var]):
         print(f"Variable {var} incomplete or incorrect.")
-        break
     else:
         print(f"Variable {var} correct! +1XP")
         points += 1
@@ -68,7 +67,6 @@ for name in names:
     if name not in globals():
         print(f"Variable {name} incomplete or incorrect.")
         all_present = False
-        break
     globals()[name] = globals()[name]
 if all_present:
     if (Germanna_levels != UMW_levels and UMW_levels is MaryWash_levels and
