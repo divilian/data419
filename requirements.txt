@@ -1,0 +1,4 @@
+-e ./wnba
+numpy
+matplotlib
+scikit-learn
