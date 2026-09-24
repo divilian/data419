@@ -1,0 +1,4 @@
+nba-api
+pandas
+polars
+pyarrow

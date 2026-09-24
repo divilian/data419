@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: wnba-labs
+Version: 0.1.0
+Requires-Python: >=3.11
+Requires-Dist: nba-api
+Requires-Dist: pandas
+Requires-Dist: polars
+Requires-Dist: pyarrow
