@@ -1,0 +1,172 @@
+ah, the other thing i want is for this script to not ask to interactively filter the columns. i want it to use a standard set of columns that i have determined i want.
+
+here they are:
+
+for CommonTeamRoster:
+- TeamID
+- Season
+- Player
+- Num
+- Position
+- Height
+- Weight
+- Birth_date
+- Exp
+- School (with Polars Null values anywhere this is missing, like for Jade Melbourne)
+Omit all others.
+
+for LeagueDashPlayerStats:
+- Player_name
+- TeamID
+- GP
+- W
+- L
+- MIN
+- FGM
+- FGA
+- FG3M
+- FG3A
+- FTM
+- FTA
+- OREB
+- DREB
+- AST
+- TOV
+- STL
+- BLK
+- BLKA
+- PF
+- PFD
+- PLUS_MINUS
+- NBA_FANTASY_PTS
+- WNBA_FANTASY_PTS
+Omit all others.
+
+for LeagueDashTeamStats:
+- TEAM_ID
+- GP
+- W
+- L
+- MIN
+- FGM
+- FGA
+- FG3M
+- FG3A
+- FTM
+- FTA
+- OREB
+- DREB
+- AST
+- TOV
+- STL
+- BLK
+- BLKA
+- PF
+- PFD
+- PLUS_MINUS
+Omit all others.
+
+for LeagueGameFinder:
+- SEASON_ID
+- TEAM_ID
+- GAME_ID
+- GAME_DATE
+- MATCHUP
+- MIN
+- FGM
+- FGA
+- FG3M
+- FG3A
+- FTM
+- FTA
+- OREB
+- DREB
+- AST
+- STL
+- BLK
+- TOV
+- PF
+- PLUS_MINUS
+Omit all others.
+
+and finally, for PlayerGameLogs:
+- SEASON_YEAR
+- Player_name
+- TeamID
+- GAME_ID
+- MIN
+- FGM
+- FGA
+- FG3M
+- FG3A
+- FTM
+- FTA
+- OREB
+- DREB
+- AST
+- TOV
+- STL
+- BLK
+- BLKA
+- PF
+- PFD
+- PLUS_MINUS
+- NBA_FANTASY_PTS
+- WNBA_FANTASY_PTS
+Omit all others.
+
+Also: the script should rename all these columns to lower-case snake_case
+before saving them to .parquet.
+
+So basically, change what you created (recent version attached, with a tweak
+or two of mine I don't want to lose) so that it simply hard-codes those exact
+columns it wants from each table.
+
+When I run the script, it should check for the existence of each table as it
+goes. If it exists, prompt for confirmation before sucking all that table's
+information through the API and overwriting it. Also, the script should support
+a "-f" option to "force" overwrite without prompting (a message will simply be
+printed as it goes, saying "OVERWRITING existing LeagueGameFinder.parquet."
+
+Another option the script should allow is the user to specify any or all of
+these five strings to a multi-argument "-t" (for "table") argument:
+LeagueGameFinder, LeagueDashTeamStats, LeagueDashPlayerStats, CommonTeamRoster, 
+and/or PlayerGameLogs. If any of these are specified, only the tables
+specified should be pulled/refreshed from the endpoint(s). If no "-t" is
+present, it should assume "all tables."
+
+Another option should be an optional "-d" (for "directory") which will be the
+path to the directory in which to check for, and store, .parquet files. If not
+present, the script should assume "./data" is the directory to store the files.
+
+Use argparse for this so that it's consistent with my other scripts, and so
+that it has a handy "-h" to show all the options.
+
+Now before you actually proceed, sanity check me on these strategic moves:
+
+(1) We never store fields that are easily computable from other fields.
+Therefore, never PTS, FG_PCT, FT_PCT, FG3_PCT, REB, or WL from a game (since
+that's derivable from PLUS_MINUS). That makes sense, right?
+
+(2) We treat player's names as unique, since that seems convenient and almost
+always true.
+
+(3) we store team IDs since the same franchise changes names through history.
+(Is it true that when team X moves to a different city and is then known by
+team Y, they have the same TEAM_ID information? If not, then I'd want to eschew
+team IDs and just store team abbreviations, i guess)
+
+(4) to normalize, we're not going to store game information redundantly for
+each player who played in it. Hence, no GAME_DATE or MATCHUP in PlayerGameLogs:
+we can simply join on Game_ID to the LeagueGameFinder table.
+
+(5) Seems to me that Season + Birthdate can be used to compute any player's age
+(and her age for any game, no matter what season it was) without needing to
+store Age explicitly. I feel like we still need to store Exp, though -- wdyt?
+Not every player started at exactly age 22, so it seems like we lose
+information by not storing Exp. And if we do store Exp in the CommonTeamRoster
+table, we ought to be able to reconstruct "a player's years-of-experience at
+the time she played in game X, no matter how long ago it was" using similar
+arithmetic as for age, right?
+
+
