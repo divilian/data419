@@ -2,9 +2,9 @@ README.md
 pyproject.toml
 wnba/__init__.py
 wnba/display.py
-wnba/linear_regression.py
 wnba/load.py
 wnba/pull_all.py
+wnba/transform.py
 wnba_labs.egg-info/PKG-INFO
 wnba_labs.egg-info/SOURCES.txt
 wnba_labs.egg-info/dependency_links.txt
