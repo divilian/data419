@@ -14,7 +14,9 @@ from sklearn.model_selection import train_test_split
 N = 100
 np.random.seed(123)
 pos = np.random.choice(['G','F'], p=[.45, .55], size=N)
-reb = np.where(pos == 'G', np.random.normal(155, 25, N),
+reb = np.where(
+    pos == 'G',
+    np.random.normal(155, 25, N),
     np.random.normal(240, 30, N)
 )
 reb = reb.astype(int)   # (Only whole numbers of rebounds.)
