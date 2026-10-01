@@ -1,8 +1,9 @@
+# DATA 419 fall 2026
+# Demonstrate an interaction term (as well as main effects of predictors).
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats
-import polars as pl
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -10,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from wnba.load import load
 from wnba.transform import transform_pstats
 
-p = transform_pstats(load(pandas=False)['pstats'])
+p = transform_pstats(load(pandas=False)['pstats']).to_pandas()
 
 # Predict points based on rebounds, blocks, and an interaction term of rebounds
 # times blocks. (This allows for the effect of rebounds on points possibly

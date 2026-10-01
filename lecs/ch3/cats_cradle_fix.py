@@ -1,3 +1,6 @@
+# DATA 419 fall 2026
+# How to fix the "cats cradle" plotting problem (which occurs when you plot
+# non-linear points with .plot() without sorting them first).
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

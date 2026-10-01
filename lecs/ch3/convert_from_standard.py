@@ -1,3 +1,5 @@
+# DATA 419 fall 2026
+# How to plot a trend line in the original units, not z-scores.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

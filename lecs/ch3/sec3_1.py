@@ -1,3 +1,5 @@
+# DATA 419 fall 2026
+# Code to illustrate section 3.1 (linear regression) concepts.
 import numpy as np
 import polars as pl
 import matplotlib.pyplot as plt
