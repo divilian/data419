@@ -25,7 +25,7 @@ dv = 'blk'; dv_name = 'Blocked shots'
 ivs = {
     'reb': 'Rebounds',
     'pf': 'Fouls',
-    'ft_perc': 'Free Throw %'
+    'ft_perc': 'Free Throw %s'
 }
 
 
