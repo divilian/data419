@@ -65,6 +65,18 @@ inter = lr.coef_[0] - sum(
 print(f"The regression line is: {dv} = " +
     " + ".join([ f"{sl:.3f}{iv}" for iv, sl in zip(ivs.keys(),slopes) ]) +
     f" + {inter:.3f}.")
+print("Translation: a player has about:")
+for iv, sl in zip(ivs.keys(), slopes):
+    print(
+        f"  {sl:.2f} additional {dv_name.lower()} for every "
+        f"{ivs[iv].lower()[:-1]} she has",
+        end=""
+    )
+    if iv == list(ivs.keys())[-1]:
+        print(".")
+    else:
+        print(",")
+print()
 
 ### Plot the raw values, and our regression line.
 #fig_simp, ax_simp = plt.subplots()
