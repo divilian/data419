@@ -58,7 +58,10 @@ lr.fit(X_train, y_train)
 
 ## Print results. Convert coefficients from z-score to back original units 
 slopes = [ lr.coef_[k] / scaler.scale_[k-1] for k in range(1,len(ivs)+1) ]
-inter = lr.coef_[0] - lr.coef_[1] * scaler.mean_[0] / scaler.scale_[0]
+inter = lr.coef_[0] - sum(
+    lr.coef_[k] * scaler.mean_[k-1] / scaler.scale_[k-1]
+    for k in range(1, len(ivs)+1)
+)
 print(f"The regression line is: {dv} = " +
     " + ".join([ f"{sl:.3f}{iv}" for iv, sl in zip(ivs.keys(),slopes) ]) +
     f" + {inter:.3f}.")
