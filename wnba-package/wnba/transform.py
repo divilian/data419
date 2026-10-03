@@ -13,6 +13,11 @@ def transform_pstats(pstats):
             pl.col("dreb")
         ).alias("reb"),
         (
+            pl.when(pl.col("fta") == 0)
+            .then(0.0)
+            .otherwise(pl.col("ftm") / pl.col("fta") * 100)
+        ).alias("ft_perc"),
+        (
             pl.when(pl.col("tov") == 0)
             .then(0.0)
             .otherwise(pl.col("ast") / pl.col("tov"))
@@ -29,6 +34,7 @@ def transform_pstats(pstats):
         'fg3a',
         'ftm',
         'fta',
+        'ft_perc',
         'oreb',
         'dreb',
         'reb',
