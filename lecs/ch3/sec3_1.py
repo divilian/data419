@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_validate
 
+from wnba.utils import regression_summary
 
 # Load and transform the data. (You can replace this section with your own data
 # set.)
@@ -65,6 +66,21 @@ ax_simp.set_xlabel(iv_name)
 ax_simp.set_ylabel(dv_name)
 ax_simp.axline((0, inter), slope=slope, color="red")
 fig_simp.savefig("simp.svg")
+
+# Let's also print out the traditional statistics regression table.
+print("Traditional regression table:")
+print(
+    regression_summary(
+        lr,
+        pl.DataFrame(  # Convert to df so regression_summary prints var names
+            X_train,
+            schema=['intercept',iv]
+        ),
+        y_train,
+        scaler,
+    ),
+)
+print()
 
 
 # Section 3.1.2: Assessing accuracy
@@ -204,3 +220,4 @@ results = cross_validate(
 #    f"{results['test_r2'].std():.3f}.")
 #print(f"10-fold CV reports MAE of {-results['test_mae'].mean():.3f} ± "
 #    f"{results['test_mae'].std():.3f} {dv_name.lower()}.")
+

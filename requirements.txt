@@ -1,4 +1,7 @@
 -e ./wnba-package
 numpy
+pandas
+polars
 matplotlib
 scikit-learn
+scipy
