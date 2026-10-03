@@ -78,28 +78,20 @@ for iv, sl in zip(ivs.keys(), slopes):
         print(",")
 print()
 
-### Plot the raw values, and our regression line.
-#fig_simp, ax_simp = plt.subplots()
-#ax_simp.scatter(p[iv],p[dv],marker='.')
-#ax_simp.set_xlabel(iv_name)
-#ax_simp.set_ylabel(dv_name)
-#ax_simp.axline((0, inter), slope=slope, color="red")
-#fig_simp.savefig("simp.svg")
-#
-## Let's also print out the traditional statistics regression table.
-#print("Traditional regression table:")
-#print(
-#    regression_summary(
-#        lr,
-#        pl.DataFrame(  # Convert to df so regression_summary prints var names
-#            X_train,
-#            schema=['intercept',iv]
-#        ),
-#        y_train,
-#        scaler,
-#    ),
-#)
-#print()
+# Let's also print out the traditional statistics regression table.
+print("Traditional regression table:")
+print(
+    regression_summary(
+        lr,
+        pl.DataFrame(  # Convert to df so regression_summary prints var names
+            X_train,
+            schema=['intercept',*ivs.keys()]
+        ),
+        y_train,
+        scaler,
+    ),
+)
+print()
 #
 #
 ## Section 3.1.2: Assessing accuracy
