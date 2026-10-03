@@ -8,17 +8,16 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_validate
 
-from wnba.utils import regression_summary
-
 # Load and transform the data. (You can replace this section with your own data
 # set.)
 from wnba import load
 from wnba.transform import transform_pstats
-
+from wnba.utils import regression_summary
 p = load(pandas=False)['pstats']
 p = transform_pstats(p)
 print(p)
 print()
+
 
 ## Predict blocks based on rebounds.
 dv = 'blk'; dv_name = 'Blocked shots'
