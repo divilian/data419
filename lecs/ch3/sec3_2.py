@@ -29,7 +29,7 @@ ivs = {
 }
 
 
-# Section 3.1: Simple Linear Regression
+# Section 3.2: Multiple Linear Regression
 
 ## Build the feature matrix. (The raw version of the design matrix.)
 X = np.concatenate(
@@ -57,11 +57,11 @@ lr = LinearRegression(fit_intercept=False)
 lr.fit(X_train, y_train)
 
 ## Print results. Convert coefficients from z-score to back original units 
-slopes = [ lr.coef_[k] / scaler.scale_[k-1] for k in range(1,len(ivs)+1) ]
 inter = lr.coef_[0] - sum(
     lr.coef_[k] * scaler.mean_[k-1] / scaler.scale_[k-1]
     for k in range(1, len(ivs)+1)
 )
+slopes = [ lr.coef_[k] / scaler.scale_[k-1] for k in range(1,len(ivs)+1) ]
 print(f"The regression line is: {dv} = " +
     " + ".join([ f"{sl:.3f}{iv}" for iv, sl in zip(ivs.keys(),slopes) ]) +
     f" + {inter:.3f}.")
@@ -92,143 +92,112 @@ print(
     ),
 )
 print()
-#
-#
-## Section 3.1.2: Assessing accuracy
-#preds_train = lr.predict(X_train)
-#preds_test = lr.predict(X_test)
-#RMSE_train = np.sqrt(((preds_train - y_train)**2).mean())
-#RMSE_test = np.sqrt(((preds_test - y_test)**2).mean())
-#print(f"Train RMSE: {RMSE_train:.2f}")
-#print(f" Test RMSE: {RMSE_test:.2f}")
-#print(
-#    f"Translation: our estimates for each player were kinda off by about "
-#    f"{RMSE_test:.2f} {dv_name.lower()} on average.\n")
-#train_TSS = ((y_train - y_train.mean())**2).sum()
-#train_RSS = ((y_train - preds_train)**2).sum()
-#test_TSS = ((y_test - y_test.mean())**2).sum()
-#test_RSS = ((y_test - preds_test)**2).sum()
-#print(f"Train R^2: {lr.score(X_train, y_train):.3f} ", end="")
-#print(f"(={1-train_RSS/train_TSS:.3f})")
-#print(f" Test R^2: {lr.score(X_test, y_test):.3f} ", end="")
-#print(f"(={1-test_RSS/test_TSS:.3f})")
-#print(
-#    f"Translation: {iv_name.lower()} explains about "
-#    f"{lr.score(X_test, y_test)*100:.1f}% of the variance in "
-#    f"{dv_name.lower()}.\n")
-#
-#
-### Confidence intervals: computed first analytically, then via bootstrap. 
-#
-### Compute standard errors and confidence intervals. We assume independent
-### errors (one player's prediction error doesn't tell us about another's) and
-### constant-variance errors (the spread of prediction errors is the same
-### regardless of how many rebounds a player has).
-#x = X_train_raw[:,1]
-#residuals = y_train - preds_train
-#n = len(y_train)
-#std_err_inter = np.sqrt(
-#    ((residuals ** 2).sum() / (n - 2)) * (
-#        1 / n +
-#        x.mean() ** 2 /
-#        ((x - x.mean()) ** 2).sum()
-#    )
-#)
-#std_err_slope = np.sqrt(
-#    ((residuals ** 2).sum() / (n - 2)) /
-#    ((x - x.mean()) ** 2).sum()
-#)
-##print(f"Computed analytically:")
-##print(f"  The slope is {slope:.3f} ± {2*std_err_slope:.3f}.")
-##print(f"  The intercept is {inter:.3f} ± {2*std_err_inter:.3f}.")
-#
-### Plot the approximate 95% pointwise confidence band of the regression line.
-#s_e = np.sqrt((residuals ** 2).sum() / (n - 2))
-#Sxx = ((x - x.mean()) ** 2).sum()
-#
-#x_grid = np.linspace(x.min(), x.max(), 200)
-#y_grid = inter + slope * x_grid
-#
-### Standard error of the estimated mean at each x.
-#se_line = s_e * np.sqrt(
-#    1 / n + (x_grid - x.mean()) ** 2 / Sxx
-#)
-#
-#fig_confint, ax_confint = plt.subplots()
-#ax_confint.scatter(p[iv],p[dv],marker='.')
-#ax_confint.set_xlabel(iv_name)
-#ax_confint.set_ylabel(dv_name)
-#ax_confint.axline((0, inter), slope=slope, color="red")
-#fig_confint.savefig("confint.svg")
-#
-#ax_confint.fill_between(
-#    x_grid,
-#    y_grid - 2 * se_line,
-#    y_grid + 2 * se_line,
-#    color="red",
-#    alpha=0.2,
-#    label="95% confidence band"
-#)
-#
-### 95% prediction interval for an individual player.
-#se_prediction = s_e * np.sqrt(
-#    1 + 1 / n + (x_grid - x.mean()) ** 2 / Sxx
-#)
-#
-#ax_confint.fill_between(
-#    x_grid,
-#    y_grid - 2 * se_prediction,
-#    y_grid + 2 * se_prediction,
-#    color="blue",
-#    alpha=0.12,
-#    label="95% prediction interval"
-#)
-#
-#ax_confint.legend()
-#fig_confint.savefig("confint.svg")
-#
-### Confidence intervals: computed via bootstrap. (Look ahead to ch.5.)
-#
-#num_boot = 500   # number of independent bootstrap samples
-#B = np.empty((num_boot, 2))    # estimate a slope and intercept for each
-#for b in range(num_boot):
-#    boot_sample = np.random.choice(
-#        range(len(X_train)),
-#        len(X_train),
-#        replace=True,
-#    )
-#    X_boot = X_train[boot_sample]
-#    y_boot = y_train[boot_sample]
-#    lr_boot = LinearRegression(fit_intercept=False)
-#    lr_boot.fit(X_boot, y_boot)
-#    B[b,:] = lr_boot.coef_
-#
-### Convert coefficients back to original units.
-#B[:,0] -= B[:,1] * scaler.mean_[0] / scaler.scale_[0]
-#B[:,1] /= scaler.scale_[0]
-#
-#print(f"Estimated with bootstrap:")
-#print(f"  The slope is {B[:,1].mean():.3f} ± {2*B[:,1].std():.3f}.")
-#print(f"  The inter is {B[:,0].mean():.3f} ± {2*B[:,0].std():.3f}.")
-#
-#
-## Finally, use cross-validation to make use of entire data set.
-#lr = LinearRegression(fit_intercept=False)
-#results = cross_validate(
-#    lr,
-#    X,
-#    y,
-#    cv=10,
-#    scoring={
-#        "r2": "r2",
-#        "mse": "neg_mean_squared_error",
-#        "mae": "neg_mean_absolute_error",
-#    },
-#    return_train_score=True,
-#    return_estimator=True,
-#)
-##print(f"10-fold CV reports R^2 of {results['test_r2'].mean():.3f} ± "
-##    f"{results['test_r2'].std():.3f}.")
-##print(f"10-fold CV reports MAE of {-results['test_mae'].mean():.3f} ± "
-##    f"{results['test_mae'].std():.3f} {dv_name.lower()}.")
-#
+
+
+# Section 3.1.2: Assessing accuracy
+preds_train = lr.predict(X_train)
+preds_test = lr.predict(X_test)
+RMSE_train = np.sqrt(((preds_train - y_train)**2).mean())
+RMSE_test = np.sqrt(((preds_test - y_test)**2).mean())
+print(f"Train RMSE: {RMSE_train:.2f}")
+print(f" Test RMSE: {RMSE_test:.2f}")
+print(f"Translation: our estimates for each player were kinda off by about "
+    f"{RMSE_test:.2f} {dv_name.lower()} on average.\n")
+train_TSS = ((y_train - y_train.mean())**2).sum()
+train_RSS = ((y_train - preds_train)**2).sum()
+test_TSS = ((y_test - y_test.mean())**2).sum()
+test_RSS = ((y_test - preds_test)**2).sum()
+print(f"Train R^2: {lr.score(X_train, y_train):.3f} ", end="")
+print(f"(={1-train_RSS/train_TSS:.3f})")
+print(f" Test R^2: {lr.score(X_test, y_test):.3f} ", end="")
+print(f"(={1-test_RSS/test_TSS:.3f})")
+iv_print = "(" + ", ".join([ iv.lower() for iv in ivs.values() ]) + ")"
+print(
+    f"Translation: using {iv_print}, our model explains about "
+    f"{lr.score(X_test, y_test)*100:.1f}% of the variance in "
+    f"{dv_name.lower()}.\n")
+
+
+## Confidence intervals: computed first analytically, then via bootstrap. 
+
+## Compute standard errors and confidence intervals. We assume independent
+## errors (one player's prediction error doesn't tell us about another's) and
+## constant-variance errors (the spread of prediction errors is the same
+## regardless of how many rebounds a player has).
+
+residuals = y_train - preds_train
+n = len(y_train)
+p = X_train_raw.shape[1]     # number of coefficients, including intercept
+
+# Estimate the residual variance.
+mse = (residuals ** 2).sum() / (n - p)
+
+# Covariance matrix of the coefficient estimates, in original units.
+cov = mse * np.linalg.inv(X_train_raw.T @ X_train_raw)
+
+# Standard errors are the square roots of its diagonal entries.
+std_errs = np.sqrt(np.diag(cov))
+std_err_inter = std_errs[0]
+std_err_coefs = std_errs[1:]
+
+print("Computed analytically:")
+for i, iv in enumerate(ivs.values()):
+    print(
+        f"  The {iv.lower()} slope is {slopes[i]:.3f} "
+        f"± {2*std_err_coefs[i]:.3f}."
+    )
+print(f"  The intercept is {inter:.3f} ± {2*std_err_inter:.3f}.")
+print()
+
+## Confidence intervals: computed via bootstrap. (Look ahead to ch.5.)
+
+num_boot = 500   # number of independent bootstrap samples
+B = np.empty((num_boot, len(ivs)+1))  # estimate slopes and intercept for each
+for b in range(num_boot):
+    boot_sample = np.random.choice(
+        range(len(X_train)),
+        len(X_train),
+        replace=True,
+    )
+    X_boot = X_train[boot_sample]
+    y_boot = y_train[boot_sample]
+    lr_boot = LinearRegression(fit_intercept=False)
+    lr_boot.fit(X_boot, y_boot)
+    B[b,:] = lr_boot.coef_
+
+## Convert coefficients back to original units.
+### First convert intercept.
+B[:,0] -= (
+    B[:,1:] * scaler.mean_ / scaler.scale_
+).sum(axis=1)
+### Then convert each slope.
+for i in range(1,len(ivs)+1):
+    B[:,i] /= scaler.scale_[i-1]
+
+print(f"Estimated with bootstrap:")
+for i, iv in enumerate(ivs.values(), start=1):
+    print(f"  The {iv.lower()} slope is {B[:,i].mean():.3f} "
+        f"± {2*B[:,i].std():.3f}.")
+print(f"  The inter is {B[:,0].mean():.3f} ± {2*B[:,0].std():.3f}.")
+print()
+
+
+# Finally, use cross-validation to make use of entire data set.
+lr = LinearRegression(fit_intercept=False)
+results = cross_validate(
+    lr,
+    X,
+    y,
+    cv=10,
+    scoring={
+        "r2": "r2",
+        "mse": "neg_mean_squared_error",
+        "mae": "neg_mean_absolute_error",
+    },
+    return_train_score=True,
+    return_estimator=True,
+)
+print(f"10-fold CV reports R^2 of {results['test_r2'].mean():.3f} ± "
+    f"{results['test_r2'].std():.3f}.")
+print(f"10-fold CV reports MAE of {-results['test_mae'].mean():.3f} ± "
+    f"{results['test_mae'].std():.3f} {dv_name.lower()}.")

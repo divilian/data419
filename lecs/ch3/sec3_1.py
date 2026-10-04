@@ -51,9 +51,9 @@ X_test = np.concatenate([X_test_raw[:,0:1], X_test_numeric], axis=1)
 lr = LinearRegression(fit_intercept=False)
 lr.fit(X_train, y_train)
 
-## Print results. Convert coefficients from z-score to back original units 
-slope = lr.coef_[1] / scaler.scale_[0]
+## Print results. Convert coefficients from z-score to back original units.
 inter = lr.coef_[0] - lr.coef_[1] * scaler.mean_[0] / scaler.scale_[0]
+slope = lr.coef_[1] / scaler.scale_[0]
 print(f"The regression line is: {dv} = {slope:.2f}{iv} + {inter:.2f}.")
 print(f"Translation: a player has about {slope:.2f} additional "
     f"{dv_name.lower()} for every {iv_name.lower()[:-1]} she has.\n")
@@ -196,8 +196,8 @@ B[:,0] -= B[:,1] * scaler.mean_[0] / scaler.scale_[0]
 B[:,1] /= scaler.scale_[0]
 
 print(f"Estimated with bootstrap:")
-print(f"  The slope is {B[:,1].mean():.3f} ± {2*B[:,1].std():.3f}.")
 print(f"  The inter is {B[:,0].mean():.3f} ± {2*B[:,0].std():.3f}.")
+print(f"  The slope is {B[:,1].mean():.3f} ± {2*B[:,1].std():.3f}.")
 
 
 # Finally, use cross-validation to make use of entire data set.
