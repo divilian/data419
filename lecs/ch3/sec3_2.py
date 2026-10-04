@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_validate
+from scipy.stats import f
 
 
 # Load and transform the data. (You can replace this section with your own data
@@ -27,6 +28,7 @@ ivs = {
     'pf': 'Fouls',
     'ft_perc': 'Free Throw %s'
 }
+iv_print = "(" + ", ".join([ iv.lower() for iv in ivs.values() ]) + ")"
 
 
 # Section 3.2: Multiple Linear Regression
@@ -93,9 +95,28 @@ print(
 )
 print()
 
+# And let's do an F-test to see whether these-predictors-all-taken-together are
+# better than an intercept-only model. (pp.84-85)
+preds_train = lr.predict(X_train)
+
+n = len(y_train)
+p = X_train.shape[1]
+
+RSS = ((y_train - preds_train)**2).sum()
+TSS = ((y_train - y_train.mean())**2).sum()
+
+F = ((TSS - RSS) / p) / (RSS / (n - p - 1))
+p_value = f.sf(F, p, n - p - 1)
+
+print(f"F test: {F:.3f} (p-value {p_value:.3f})")
+if p_value <= .05:
+    print(f"Translation: yes, {iv_print} is better than intercept-only.")
+else:
+    print(f"Translation: no, {iv_print} is not better than intercept-only.")
+print()
+
 
 # Section 3.1.2: Assessing accuracy
-preds_train = lr.predict(X_train)
 preds_test = lr.predict(X_test)
 RMSE_train = np.sqrt(((preds_train - y_train)**2).mean())
 RMSE_test = np.sqrt(((preds_test - y_test)**2).mean())
@@ -111,7 +132,6 @@ print(f"Train R^2: {lr.score(X_train, y_train):.3f} ", end="")
 print(f"(={1-train_RSS/train_TSS:.3f})")
 print(f" Test R^2: {lr.score(X_test, y_test):.3f} ", end="")
 print(f"(={1-test_RSS/test_TSS:.3f})")
-iv_print = "(" + ", ".join([ iv.lower() for iv in ivs.values() ]) + ")"
 print(
     f"Translation: using {iv_print}, our model explains about "
     f"{lr.score(X_test, y_test)*100:.1f}% of the variance in "
@@ -180,6 +200,7 @@ for i, iv in enumerate(ivs.values(), start=1):
         f"± {2*B[:,i].std():.3f}.")
 print(f"  The inter is {B[:,0].mean():.3f} ± {2*B[:,0].std():.3f}.")
 print()
+
 
 
 # Finally, use cross-validation to make use of entire data set.
