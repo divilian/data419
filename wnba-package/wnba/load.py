@@ -318,7 +318,7 @@ def _humanize_polars(
     )
     tables["player"] = (
         tables["player"]
-        .drop("player_id")
+#        .drop("player_id")
         .with_columns(
             pl.col("position").map_elements(
                 _position_values,

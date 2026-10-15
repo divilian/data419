@@ -25,6 +25,7 @@ def transform_pstats(pstats):
     )
     return p.select(
         'year',
+        'player',
         'gp',
         'min',
         'pts',
@@ -47,4 +48,16 @@ def transform_pstats(pstats):
         'pf',
         'pfd',
         '+/-',
+    )
+
+def transform_player(player):
+    # Simplify positions to backcourt / frontcourt.
+    return player.with_columns(
+        pl.when(
+            pl.col("position").list.contains("F") |
+            pl.col("position").list.contains("C")
+        )
+        .then(pl.lit("front"))
+        .otherwise(pl.lit("back"))
+        .alias("court")
     )
