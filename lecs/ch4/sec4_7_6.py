@@ -1,5 +1,5 @@
 # DATA 419 fall 2026
-# Code to illustrate section 2.2.3/4.7.6 (kNN) concepts.
+# Code to illustrate section 2.2.3/4.7.6 (kNN) concepts (binary classification)
 import numpy as np
 import polars as pl
 import matplotlib.pyplot as plt
