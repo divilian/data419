@@ -1,3 +1,5 @@
+# DATA 419 fall 2026
+# Code to illustrate a first basic linear regression.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
