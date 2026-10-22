@@ -17,10 +17,10 @@ import pandas as pd
 raw = pd.read_csv(StringIO(
 '''
 name,tuna,yrs_exp,gender,education,salary,age,rank,employed
-Melodia,5,1,F,HS,56000,21,Padawan,True
-Brick,1,5,M,Bachelors,66000,30,Jedi,True
+Melodia,5,1,F,HS,56000,,Padawan,True
+Brick,,5,M,Bachelors,66000,30,,True
 Sylpheneria,2,11,F,PhD,123456,31,Jedi Master,False
-Robin,1,1,NB,Bachelors,61000,23,Jedi,False
+Robin,1,1,NB,Bachelors,61000,23,Youngling,False
 Christopher,1,0,M,HS,9999,20,Youngling,True
 Fred,3,0,M,HS,0,,Youngling,False
 '''
@@ -52,7 +52,7 @@ preprocessor = ColumnTransformer([
     (
         'std_pipe',
         Pipeline([
-#            ('impute', SimpleImputer(strategy="most_frequent")),
+            ('impute', SimpleImputer(strategy="mean")),
             ('std', StandardScaler()),
         ]),
         features_to_standardize,
@@ -60,7 +60,7 @@ preprocessor = ColumnTransformer([
     (
         'norm_pipe',
         Pipeline([
-#            ('impute', SimpleImputer(strategy="most_frequent")),
+            ('impute', SimpleImputer(strategy="constant", fill_value=3)),
             ('std', MinMaxScaler()),
         ]),
         features_to_normalize,
@@ -68,10 +68,10 @@ preprocessor = ColumnTransformer([
     (
         'ord',
         Pipeline([
-#            (
-#                'impute',
-#                SimpleImputer(strategy="constant", fill_value="Youngling")
-#            ),
+            (
+                'impute',
+                SimpleImputer(strategy="most_frequent")
+            ),
             (
                 'ord',
                 OrdinalEncoder(categories=[
@@ -89,8 +89,7 @@ preprocessor = ColumnTransformer([
     ),
     (
         'leave',
-        'passthrough',
-      #  SimpleImputer(strategy="constant", fill_value=4.173),
+        SimpleImputer(strategy="median"),
         features_to_leave_alone
     ),
     # Note that we didn't mention 'name' anywhere, and so it's dropped
@@ -108,4 +107,4 @@ transformed = pd.DataFrame(
 print()
 print(features)
 print()
-#print(transformed)
+print(transformed)
