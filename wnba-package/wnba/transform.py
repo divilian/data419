@@ -51,7 +51,8 @@ def transform_pstats(pstats):
     )
 
 def transform_player(player):
-    # Simplify positions to backcourt / frontcourt.
+    # Simplify positions in two ways: (1) make all "C"'s centers and then all
+    # "G"'s guards, and (2) collapse to backcourt / frontcourt.
     return player.with_columns(
         pl.when(
             pl.col("position").list.contains("F") |
@@ -59,5 +60,10 @@ def transform_player(player):
         )
         .then(pl.lit("front"))
         .otherwise(pl.lit("back"))
-        .alias("court")
+        .alias("court"),
+
+        pl.when(pl.col("position").list.contains("C")).then(pl.lit("C"))
+          .when(pl.col("position").list.contains("F")).then(pl.lit("F"))
+          .otherwise(pl.lit("G"))
+        .alias("pos"),
     )
