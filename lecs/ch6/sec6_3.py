@@ -29,6 +29,7 @@ features = list(set(p.columns) - {
     'birth_date',
     'player_id',
     'court',
+    'pos',
     'position'})
 dv = p['court']
 
@@ -69,17 +70,22 @@ ax.legend()
 fig.savefig("PC2.svg")
 
 
-pipe = Pipeline([ ('pca', PCA()), ('log-reg', LogisticRegression()) ])
+pipe = Pipeline([
+    ('scaler', StandardScaler()),
+    ('pca', PCA()),
+    # (C=np.inf so that it doesn't do any automatic regularization.)
+    ('log-reg', LogisticRegression(C=np.inf))
+])
 
 grid = GridSearchCV(
     pipe,
-    param_grid={'pca__n_components': range(1, len(features))},
+    param_grid={'pca__n_components': range(1, len(features)+1)},
     scoring=['accuracy','f1_macro'],
     cv=10,
     refit='accuracy'  # once we're done, which should we use for best model?
 )
 
-grid.fit(X_scaled, dv)
+grid.fit(X, dv)   # not X_scaled, since we have scaler in the pipeline
 
 n_components = grid.cv_results_['param_pca__n_components']
 accuracies = grid.cv_results_['mean_test_accuracy']
@@ -94,5 +100,23 @@ axes[1].set_xlabel('Number of principal components')
 axes[1].set_ylabel('Mean cross-validation f1 (macro)')
 fig.savefig("PC_accuracy_f1.svg")
 
-print("Best number of components:", grid.best_params_['pca__n_components'])
-print("Best CV accuracy:", grid.best_score_)
+print(f"Best number of components: {grid.best_params_['pca__n_components']}")
+print(f"    Best CV accuracy: {grid.best_score_:.4f}")
+print(f"    Best model's f1-macro: {f1s[grid.best_index_]:.4f}")
+print(f"    Best f1-macro for any model: {f1s.max():.4f}")
+
+
+# Let's compare this to plain-old logistic regression, using all features.
+# (C=np.inf so that it doesn't do any automatic regularization.)
+plain = Pipeline([ ('log-reg', LogisticRegression(C=np.inf)) ])
+plain_results = cross_validate(
+    plain,
+    X_scaled,
+    dv,
+    scoring=['accuracy','f1_macro'],
+    cv=10,
+    n_jobs=-1
+)
+print("Compare with plain log reg using all features:\n" +
+    f"    accuracy: {plain_results['test_accuracy'].mean():.4f}\n" +
+    f"    f1-macro: {plain_results['test_f1_macro'].mean():.4f}")
