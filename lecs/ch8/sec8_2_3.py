@@ -92,6 +92,7 @@ for t in [
         ax=ax
     )
     fig.savefig(f"adabooster{t:02d}.svg")
+    plt.close(fig)
 
 # And now, gradient boosting (in the spirit of the actual ISLP chapter).
 
@@ -125,10 +126,9 @@ for t in [
     *range(0, 4),
     *range(len(gbooster.estimators_)-4, len(gbooster.estimators_))
 ]:
-    fig, ax = plt.subplots(figsize=(12,6))
-
     for c in range(len(pos.unique())):
         print(f"Plotting tree {t:2d}, class {c:02d}...")
+        fig, ax = plt.subplots(figsize=(12,6))
         plot_tree(
             gbooster.estimators_[t,c],
             feature_names=features,
@@ -137,3 +137,4 @@ for t in [
             ax=ax
         )
         fig.savefig(f"gbooster{t:02d}_{c:02d}.svg")
+        plt.close(fig)
