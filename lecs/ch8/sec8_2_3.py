@@ -1,5 +1,5 @@
 # DATA 419 fall 2026
-# Code to illustrate section 8.2.1 (AdaBoosting decision trees).
+# Code to illustrate section 8.2.3 (AdaBoosting decision trees).
 # Note: the book describes gradient boosting; this code uses AdaBoost as well.
 import numpy as np
 import pandas as pd
